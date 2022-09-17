@@ -11,6 +11,7 @@ INCLUDE_DIRECTORIES(
     ${UUID}/include
     ${SRC}/public
     ${SRC}/common
+    ${SRC}/util
 )
 
 # 添加依赖库目录
@@ -22,6 +23,7 @@ LINK_DIRECTORIES(
 
 AUX_SOURCE_DIRECTORY("common/"  GOOFY_SOURCE)
 AUX_SOURCE_DIRECTORY("db/"      GOOFY_SOURCE)
+AUX_SOURCE_DIRECTORY("util/"  GOOFY_SOURCE)
 
 ADD_LIBRARY(goofy ${GOOFY_SOURCE})
 

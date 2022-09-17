@@ -16,6 +16,7 @@ INCLUDE_DIRECTORIES(
     ${UUID}/include
     ${SRC}/public
     ${SRC}/common
+    ${SRC}/util
 )
 
 # 添加依赖库目录
@@ -29,7 +30,8 @@ LINK_DIRECTORIES(
 
 # 添加 ut 所需源文件目录
 AUX_SOURCE_DIRECTORY("ut/" UT_SOURCE)
-AUX_SOURCE_DIRECTORY("${SRC}/common" UT_SOURCE)
+AUX_SOURCE_DIRECTORY("${SRC}/common/" UT_SOURCE)
+AUX_SOURCE_DIRECTORY("${SRC}/util/" UT_SOURCE)
 
 # 生成 ut
 ADD_EXECUTABLE(goofy_ut "ut.cpp" ${UT_SOURCE})
