@@ -1,0 +1,21 @@
+#!/bin/sh
+
+target=$1
+
+source_dir=$2
+if [ -z ${source_dir} ]; then
+    source_dir=../src
+fi
+
+# -b
+argv=$3
+
+# CMake 构建目录
+build_dir=../build/
+
+object_dir=`find ${build_dir} -type d -name ${target}.dir`
+
+# axcludeDir='--exclude=.'
+exclude_dir=
+
+./gcovr --object-directory=${object_dir} --root=${source_dir} ${exclude_dir} ${argv}
