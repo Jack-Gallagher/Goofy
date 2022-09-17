@@ -34,7 +34,7 @@ AUX_SOURCE_DIRECTORY("${SRC}/common/" UT_SOURCE)
 AUX_SOURCE_DIRECTORY("${SRC}/util/" UT_SOURCE)
 
 # 生成 ut
-ADD_EXECUTABLE(goofy_ut "ut.cpp" ${UT_SOURCE})
+ADD_EXECUTABLE(goofy_ut ${UT_SOURCE})
 
 # 为 ut 链接动态库
 TARGET_LINK_LIBRARIES(goofy_ut
@@ -49,7 +49,7 @@ TARGET_LINK_LIBRARIES(goofy_ut
 AUX_SOURCE_DIRECTORY("demo/" DEMO_SOURCE)
 
 # 生成 demo
-ADD_EXECUTABLE(goofy_demo "demo.cpp" ${DEMO_SOURCE})
+ADD_EXECUTABLE(goofy_demo ${DEMO_SOURCE})
 
 # 为 demo 链接动态库
 TARGET_LINK_LIBRARIES(goofy_demo
