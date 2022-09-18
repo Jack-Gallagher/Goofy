@@ -20,18 +20,14 @@ namespace details {
 class SPDLOG_API periodic_worker
 {
 public:
-    periodic_worker();
-    ~periodic_worker();
+    periodic_worker(const std::function<void()> &callback_fun, std::chrono::seconds interval);
     periodic_worker(const periodic_worker &) = delete;
     periodic_worker &operator=(const periodic_worker &) = delete;
-
-    void startup(std::shared_ptr<periodic_worker> self, const std::function<void()> &callback_fun, std::chrono::seconds interval);
-
     // stop the worker thread and join it
-    void shutdown();
+    ~periodic_worker();
 
 private:
-    bool active_ = false;
+    bool active_;
     std::thread worker_thread_;
     std::mutex mutex_;
     std::condition_variable cv_;

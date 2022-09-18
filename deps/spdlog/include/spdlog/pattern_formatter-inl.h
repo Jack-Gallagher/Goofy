@@ -936,7 +936,7 @@ public:
     void format(const details::log_msg &msg, const std::tm &tm_time, memory_buf_t &dest) override
     {
         using std::chrono::duration_cast;
-        using std::chrono::microseconds;
+        using std::chrono::milliseconds;
         using std::chrono::seconds;
 
         // cache the date/time part for the next second.
@@ -969,37 +969,10 @@ public:
         }
         dest.append(cached_datetime_.begin(), cached_datetime_.end());
 
-        auto micros = fmt_helper::time_fraction<microseconds>(msg.time);
-        fmt_helper::pad6(static_cast<uint32_t>(micros.count()), dest);
-
-        dest.push_back(' ');
-
-        auto total_minutes = get_cached_offset(msg, tm_time);
-        bool is_negative = total_minutes < 0;
-        if (is_negative)
-        {
-            total_minutes = -total_minutes;
-            dest.push_back('-');
-        }
-        else
-        {
-            dest.push_back('+');
-        }
-        fmt_helper::pad2(total_minutes / 60, dest); // hours
-        dest.push_back(':');
-        fmt_helper::pad2(total_minutes % 60, dest); // minutes
-
+        auto millis = fmt_helper::time_fraction<milliseconds>(msg.time);
+        fmt_helper::pad3(static_cast<uint32_t>(millis.count()), dest);
         dest.push_back(']');
         dest.push_back(' ');
-
-        // append service name if set
-        const std::string& service_name = get_service_name();
-        if(service_name.empty() == false) {
-            dest.push_back('[');
-            fmt_helper::append_string_view(service_name, dest);
-            dest.push_back(']');
-            dest.push_back(' ');
-        }
 
         // append logger name if exists
         if (msg.logger_name.size() > 0)
@@ -1009,16 +982,6 @@ public:
             dest.push_back(']');
             dest.push_back(' ');
         }
-
-        // append pid and tid
-        dest.push_back('[');
-        fmt_helper::append_int(details::os::pid(), dest);
-        dest.push_back(']');
-        dest.push_back(' ');
-        dest.push_back('[');
-        fmt_helper::append_int(msg.thread_id, dest);
-        dest.push_back(']');
-        dest.push_back(' ');
 
         dest.push_back('[');
         // wrap the level name with color
@@ -1033,20 +996,10 @@ public:
         if (!msg.source.empty())
         {
             dest.push_back('[');
-            if(msg.source.modulename != nullptr) {
-                fmt_helper::append_string_view(msg.source.modulename, dest);
-                dest.push_back(' ');
-            }
             const char *filename = details::short_filename_formatter<details::null_scoped_padder>::basename(msg.source.filename);
             fmt_helper::append_string_view(filename, dest);
             dest.push_back(':');
             fmt_helper::append_int(msg.source.line, dest);
-            if(msg.level == level::err || msg.level == level::critical) {
-                if(msg.source.funcname != nullptr) {
-                    dest.push_back('@');
-                    fmt_helper::append_string_view(msg.source.funcname, dest);
-                }
-            }
             dest.push_back(']');
             dest.push_back(' ');
         }
@@ -1057,20 +1010,6 @@ public:
 private:
     std::chrono::seconds cache_timestamp_{0};
     memory_buf_t cached_datetime_;
-
-    log_clock::time_point last_update_{std::chrono::seconds(0)};
-    int offset_minutes_{0};
-
-    int get_cached_offset(const log_msg &msg, const std::tm &tm_time)
-    {
-        // refresh every 10 seconds
-        if (msg.time - last_update_ >= std::chrono::seconds(10))
-        {
-            offset_minutes_ = os::utc_minutes_offset(tm_time);
-            last_update_ = msg.time;
-        }
-        return offset_minutes_;
-    }
 };
 
 } // namespace details

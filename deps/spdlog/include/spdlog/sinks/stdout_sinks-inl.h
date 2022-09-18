@@ -15,6 +15,7 @@
 // under windows using fwrite to non-binary stream results in \r\r\n (see issue #1675)
 // so instead we use ::FileWrite
 #include <spdlog/details/windows_include.h>
+#include <fileapi.h> // WriteFile (..)
 #include <io.h>      // _get_osfhandle(..)
 #include <stdio.h>   // _fileno(..)
 #endif               // WIN32

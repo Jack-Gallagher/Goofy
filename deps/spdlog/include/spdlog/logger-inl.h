@@ -74,12 +74,6 @@ SPDLOG_INLINE level::level_enum logger::level() const
     return static_cast<level::level_enum>(level_.load(std::memory_order_relaxed));
 }
 
-SPDLOG_INLINE void logger::set_level(const std::string& module, level::level_enum log_level)
-{
-    std::lock_guard<std::mutex> lock(module_level_mutex_);
-    module_level_map_[module] = log_level;
-}
-
 SPDLOG_INLINE const std::string &logger::name() const
 {
     return name_;

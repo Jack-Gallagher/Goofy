@@ -50,11 +50,6 @@ public:
 
     std::shared_ptr<thread_pool> get_tp();
 
-    // set optional service name
-    void set_service_name(const std::string& service_name);
-
-    const std::string& get_service_name();
-
     // Set global formatter. Each sink in each logger will get a clone of this object
     void set_formatter(std::unique_ptr<formatter> formatter);
 
@@ -63,8 +58,6 @@ public:
     void disable_backtrace();
 
     void set_level(level::level_enum log_level);
-
-    void set_level(const std::string& module, level::level_enum log_level);
 
     void flush_on(level::level_enum log_level);
 
@@ -108,11 +101,10 @@ private:
     level::level_enum flush_level_ = level::off;
     void (*err_handler_)(const std::string &msg) = nullptr;
     std::shared_ptr<thread_pool> tp_;
-    std::shared_ptr<periodic_worker> periodic_flusher_;
+    std::unique_ptr<periodic_worker> periodic_flusher_;
     std::shared_ptr<logger> default_logger_;
     bool automatic_registration_ = true;
     size_t backtrace_n_messages_ = 0;
-    std::string service_name_;
 };
 
 } // namespace details

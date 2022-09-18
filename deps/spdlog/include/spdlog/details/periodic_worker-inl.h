@@ -10,10 +10,7 @@
 namespace spdlog {
 namespace details {
 
-SPDLOG_INLINE periodic_worker::periodic_worker() = default;
-SPDLOG_INLINE periodic_worker::~periodic_worker() = default;
-
-SPDLOG_INLINE void periodic_worker::startup(std::shared_ptr<periodic_worker> self, const std::function<void()> &callback_fun, std::chrono::seconds interval)
+SPDLOG_INLINE periodic_worker::periodic_worker(const std::function<void()> &callback_fun, std::chrono::seconds interval)
 {
     active_ = (interval > std::chrono::seconds::zero());
     if (!active_)
@@ -21,11 +18,11 @@ SPDLOG_INLINE void periodic_worker::startup(std::shared_ptr<periodic_worker> sel
         return;
     }
 
-    worker_thread_ = std::thread([self, callback_fun, interval]() {
+    worker_thread_ = std::thread([this, callback_fun, interval]() {
         for (;;)
         {
-            std::unique_lock<std::mutex> lock(self->mutex_);
-            if (self->cv_.wait_for(lock, interval, [self] { return !self->active_; }))
+            std::unique_lock<std::mutex> lock(this->mutex_);
+            if (this->cv_.wait_for(lock, interval, [this] { return !this->active_; }))
             {
                 return; // active_ == false, so exit this thread
             }
@@ -35,7 +32,7 @@ SPDLOG_INLINE void periodic_worker::startup(std::shared_ptr<periodic_worker> sel
 }
 
 // stop the worker thread and join it
-SPDLOG_INLINE void periodic_worker::shutdown()
+SPDLOG_INLINE periodic_worker::~periodic_worker()
 {
     if (worker_thread_.joinable())
     {

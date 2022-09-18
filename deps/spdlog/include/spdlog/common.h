@@ -134,7 +134,7 @@ using level_t = std::atomic<int>;
 #define SPDLOG_LEVEL_OFF 6
 
 #if !defined(SPDLOG_ACTIVE_LEVEL)
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
 #endif
 
 // Log level enum
@@ -218,12 +218,6 @@ struct source_loc
         , line{line_in}
         , funcname{funcname_in}
     {}
-    SPDLOG_CONSTEXPR source_loc(const char *filename_in, int line_in, const char *funcname_in, const char *modulename_in)
-        : filename{filename_in}
-        , line{line_in}
-        , funcname{funcname_in}
-        , modulename{modulename_in}
-    {}
 
     SPDLOG_CONSTEXPR bool empty() const SPDLOG_NOEXCEPT
     {
@@ -232,7 +226,6 @@ struct source_loc
     const char *filename{nullptr};
     int line{0};
     const char *funcname{nullptr};
-    const char *modulename{nullptr};
 };
 
 namespace details {

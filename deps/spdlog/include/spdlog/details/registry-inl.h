@@ -136,16 +136,6 @@ SPDLOG_INLINE std::shared_ptr<thread_pool> registry::get_tp()
     return tp_;
 }
 
-SPDLOG_INLINE void registry::set_service_name(const std::string& service_name)
-{
-    service_name_ = service_name;
-}
-
-SPDLOG_INLINE const std::string& registry::get_service_name()
-{
-    return service_name_;
-}
-
 // Set global formatter. Each sink in each logger will get a clone of this object
 SPDLOG_INLINE void registry::set_formatter(std::unique_ptr<formatter> formatter)
 {
@@ -188,15 +178,6 @@ SPDLOG_INLINE void registry::set_level(level::level_enum log_level)
     global_log_level_ = log_level;
 }
 
-SPDLOG_INLINE void registry::set_level(const std::string& module, level::level_enum log_level)
-{
-    std::lock_guard<std::mutex> lock(logger_map_mutex_);
-    for (auto &l : loggers_)
-    {
-        l.second->set_level(module, log_level);
-    }
-}
-
 SPDLOG_INLINE void registry::flush_on(level::level_enum log_level)
 {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
@@ -210,13 +191,8 @@ SPDLOG_INLINE void registry::flush_on(level::level_enum log_level)
 SPDLOG_INLINE void registry::flush_every(std::chrono::seconds interval)
 {
     std::lock_guard<std::mutex> lock(flusher_mutex_);
-    if(periodic_flusher_ != nullptr) {
-        periodic_flusher_->shutdown();
-        periodic_flusher_ = nullptr;
-    }
     auto clbk = [this]() { this->flush_all(); };
-    periodic_flusher_ = std::make_shared<periodic_worker>();
-    periodic_flusher_->startup(periodic_flusher_, clbk, interval);
+    periodic_flusher_ = details::make_unique<periodic_worker>(clbk, interval);
 }
 
 SPDLOG_INLINE void registry::set_error_handler(void (*handler)(const std::string &msg))
@@ -269,10 +245,7 @@ SPDLOG_INLINE void registry::shutdown()
 {
     {
         std::lock_guard<std::mutex> lock(flusher_mutex_);
-        if(periodic_flusher_ != nullptr) {
-            periodic_flusher_->shutdown();
-            periodic_flusher_ = nullptr;
-        }
+        periodic_flusher_.reset();
     }
 
     drop_all();

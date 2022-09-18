@@ -22,8 +22,6 @@
 #include <spdlog/details/os.h>
 #endif
 
-#include <unordered_map>
-#include <mutex>
 #include <vector>
 #ifndef SPDLOG_NO_EXCEPTIONS
 #define SPDLOG_LOGGER_CATCH()                                                                                                              \
@@ -147,7 +145,7 @@ public:
 
     void log(log_clock::time_point log_time, source_loc loc, level::level_enum lvl, string_view_t msg)
     {
-        bool log_enabled = should_log(loc, lvl);
+        bool log_enabled = should_log(lvl);
         bool traceback_enabled = tracer_.enabled();
         if (!log_enabled && !traceback_enabled)
         {
@@ -160,7 +158,7 @@ public:
 
     void log(source_loc loc, level::level_enum lvl, string_view_t msg)
     {
-        bool log_enabled = should_log(loc, lvl);
+        bool log_enabled = should_log(lvl);
         bool traceback_enabled = tracer_.enabled();
         if (!log_enabled && !traceback_enabled)
         {
@@ -229,13 +227,12 @@ public:
     template<typename... Args>
     void log(source_loc loc, level::level_enum lvl, wstring_view_t fmt, Args&&...args)
     {
-        bool log_enabled = should_log(loc, lvl);
+        bool log_enabled = should_log(lvl);
         bool traceback_enabled = tracer_.enabled();
         if (!log_enabled && !traceback_enabled)
         {
             return;
         }
-
         SPDLOG_TRY
         {
             // format to wmemory_buffer and convert to utf8
@@ -254,7 +251,7 @@ public:
     template<class T, typename std::enable_if<is_convertible_to_wstring_view<const T &>::value, int>::type = 0>
     void log(source_loc loc, level::level_enum lvl, const T &msg)
     {
-        bool log_enabled = should_log(loc, lvl);
+        bool log_enabled = should_log(lvl);
         bool traceback_enabled = tracer_.enabled();
         if (!log_enabled && !traceback_enabled)
         {
@@ -274,39 +271,9 @@ public:
 #endif // SPDLOG_WCHAR_TO_UTF8_SUPPORT
 
     // return true logging is enabled for the given level.
-    bool should_log(level::level_enum msg_level)
+    bool should_log(level::level_enum msg_level) const
     {
         return msg_level >= level_.load(std::memory_order_relaxed);
-    }
-
-    bool should_log(const std::string& module, level::level_enum msg_level)
-    {
-        auto msg_level_load = level_.load(std::memory_order_relaxed);
-        if(module.empty() == false)
-        {
-            std::lock_guard<std::mutex> lock(module_level_mutex_);
-            auto msg_level_it = module_level_map_.find(module);
-            if(msg_level_it != module_level_map_.end())
-            {
-                msg_level_load = msg_level_it->second;
-            }
-        }
-        return msg_level >= msg_level_load;
-    }
-
-    bool should_log(const source_loc& loc, level::level_enum msg_level)
-    {
-        auto msg_level_load = level_.load(std::memory_order_relaxed);
-        if(loc.modulename != nullptr)
-        {
-            std::lock_guard<std::mutex> lock(module_level_mutex_);
-            auto msg_level_it = module_level_map_.find(loc.modulename);
-            if(msg_level_it != module_level_map_.end())
-            {
-                msg_level_load = msg_level_it->second;
-            }
-        }
-        return msg_level >= msg_level_load;
     }
 
     // return true if backtrace logging is enabled.
@@ -318,8 +285,6 @@ public:
     void set_level(level::level_enum log_level);
 
     level::level_enum level() const;
-
-    void set_level(const std::string& module, level::level_enum log_level);
 
     const std::string &name() const;
 
@@ -359,14 +324,11 @@ protected:
     err_handler custom_err_handler_{nullptr};
     details::backtracer tracer_;
 
-    std::mutex module_level_mutex_;
-    std::unordered_map<std::string, spdlog::level_t> module_level_map_;
-
     // common implementation for after templated public api has been resolved
     template<typename FormatString, typename... Args>
     void log_(source_loc loc, level::level_enum lvl, const FormatString &fmt, Args&&...args)
     {
-        bool log_enabled = should_log(loc, lvl);
+        bool log_enabled = should_log(lvl);
         bool traceback_enabled = tracer_.enabled();
         if (!log_enabled && !traceback_enabled)
         {

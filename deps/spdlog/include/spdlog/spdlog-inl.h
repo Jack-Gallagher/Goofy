@@ -62,26 +62,6 @@ SPDLOG_INLINE void set_level(level::level_enum log_level)
     details::registry::instance().set_level(log_level);
 }
 
-SPDLOG_INLINE bool should_log(const std::string& module, level::level_enum log_level)
-{
-    return default_logger_raw()->should_log(module, log_level);
-}
-
-SPDLOG_INLINE void set_level(const std::string& module, level::level_enum log_level)
-{
-    details::registry::instance().set_level(module, log_level);
-}
-
-SPDLOG_INLINE const std::string& get_service_name()
-{
-    return details::registry::instance().get_service_name();
-}
-
-SPDLOG_INLINE void set_service_name(const std::string& service_name)
-{
-    details::registry::instance().set_service_name(service_name);
-}
-
 SPDLOG_INLINE void flush_on(level::level_enum log_level)
 {
     details::registry::instance().flush_on(log_level);

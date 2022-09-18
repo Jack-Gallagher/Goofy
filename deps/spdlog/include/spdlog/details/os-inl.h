@@ -46,7 +46,7 @@
 #include <sys/syscall.h> //Use gettid() syscall under linux to get thread id
 
 #elif defined(_AIX)
-#include <sys/thread.h> // for thread_self
+#include <pthread.h> // for pthread_getthreadid_np
 
 #elif defined(__DragonFly__) || defined(__FreeBSD__)
 #include <pthread_np.h> // for pthread_getthreadid_np
@@ -224,8 +224,8 @@ SPDLOG_INLINE size_t filesize(FILE *f)
 #endif
 
 #else // unix
-// OpenBSD & aix doesn't compile with :: before the fileno(..)
-#if defined(__OpenBSD__) || defined(_AIX)
+// OpenBSD doesn't compile with :: before the fileno(..)
+#if defined(__OpenBSD__)
     int fd = fileno(f);
 #else
     int fd = ::fileno(f);
@@ -276,7 +276,7 @@ SPDLOG_INLINE int utc_minutes_offset(const std::tm &tm)
     return offset;
 #else
 
-#if defined(sun) || defined(__sun) || defined(_AIX) || defined(__hpux) || (!defined(_BSD_SOURCE) && !defined(_GNU_SOURCE))
+#if defined(sun) || defined(__sun) || defined(_AIX) || (!defined(_BSD_SOURCE) && !defined(_GNU_SOURCE))
     // 'tm_gmtoff' field is BSD extension and it's missing on SunOS/Solaris
     struct helper
     {
@@ -326,9 +326,7 @@ SPDLOG_INLINE size_t _thread_id() SPDLOG_NOEXCEPT
 #define SYS_gettid __NR_gettid
 #endif
     return static_cast<size_t>(::syscall(SYS_gettid));
-#elif defined(_AIX)
-    return static_cast<size_t>(::thread_self());
-#elif defined(__DragonFly__) || defined(__FreeBSD__)
+#elif defined(_AIX) || defined(__DragonFly__) || defined(__FreeBSD__)
     return static_cast<size_t>(::pthread_getthreadid_np());
 #elif defined(__NetBSD__)
     return static_cast<size_t>(::_lwp_self());

@@ -73,20 +73,8 @@ SPDLOG_API level::level_enum get_level();
 // Set global logging level
 SPDLOG_API void set_level(level::level_enum log_level);
 
-// Get optional service name
-SPDLOG_API const std::string& get_service_name();
-
-// Set optional service name
-SPDLOG_API void set_service_name(const std::string& service_name);
-
 // Determine whether the default logger should log messages with a certain level
 SPDLOG_API bool should_log(level::level_enum lvl);
-
-// Determine whether the default logger should log messages with a certain level for module
-SPDLOG_API bool should_log(const std::string& module, level::level_enum lvl);
-
-// Set global logging level for module
-SPDLOG_API void set_level(const std::string& module, level::level_enum log_level);
 
 // Set global flush level
 SPDLOG_API void flush_on(level::level_enum log_level);
@@ -251,65 +239,52 @@ inline void critical(const T &msg)
 //
 
 #define SPDLOG_LOGGER_CALL(logger, level, ...) (logger)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, level, __VA_ARGS__)
-#define SPDLOG_MODULE_CALL(logger, module, level, ...) (logger)->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION, module}, level, __VA_ARGS__)
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_TRACE
 #define SPDLOG_LOGGER_TRACE(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::trace, __VA_ARGS__)
-#define SPDLOG_MODULE_TRACE(module, ...) SPDLOG_MODULE_CALL(spdlog::default_logger_raw(), module, spdlog::level::trace, __VA_ARGS__)
 #define SPDLOG_TRACE(...) SPDLOG_LOGGER_TRACE(spdlog::default_logger_raw(), __VA_ARGS__)
 #else
 #define SPDLOG_LOGGER_TRACE(logger, ...) (void)0
-#define SPDLOG_MODULE_TRACE(logger, ...) (void)0
 #define SPDLOG_TRACE(...) (void)0
 #endif
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG
 #define SPDLOG_LOGGER_DEBUG(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::debug, __VA_ARGS__)
-#define SPDLOG_MODULE_DEBUG(module, ...) SPDLOG_MODULE_CALL(spdlog::default_logger_raw(), module, spdlog::level::debug, __VA_ARGS__)
 #define SPDLOG_DEBUG(...) SPDLOG_LOGGER_DEBUG(spdlog::default_logger_raw(), __VA_ARGS__)
 #else
 #define SPDLOG_LOGGER_DEBUG(logger, ...) (void)0
-#define SPDLOG_MODULE_DEBUG(module, ...) (void)0
 #define SPDLOG_DEBUG(...) (void)0
 #endif
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_INFO
 #define SPDLOG_LOGGER_INFO(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::info, __VA_ARGS__)
-#define SPDLOG_MODULE_INFO(module, ...) SPDLOG_MODULE_CALL(spdlog::default_logger_raw(), module, spdlog::level::info, __VA_ARGS__)
 #define SPDLOG_INFO(...) SPDLOG_LOGGER_INFO(spdlog::default_logger_raw(), __VA_ARGS__)
 #else
 #define SPDLOG_LOGGER_INFO(logger, ...) (void)0
-#define SPDLOG_MODULE_INFO(module, ...) (void)0
 #define SPDLOG_INFO(...) (void)0
 #endif
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_WARN
 #define SPDLOG_LOGGER_WARN(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::warn, __VA_ARGS__)
-#define SPDLOG_MODULE_WARN(module, ...) SPDLOG_MODULE_CALL(spdlog::default_logger_raw(), module, spdlog::level::warn, __VA_ARGS__)
 #define SPDLOG_WARN(...) SPDLOG_LOGGER_WARN(spdlog::default_logger_raw(), __VA_ARGS__)
 #else
 #define SPDLOG_LOGGER_WARN(logger, ...) (void)0
-#define SPDLOG_MODULE_WARN(module, ...) (void)0
 #define SPDLOG_WARN(...) (void)0
 #endif
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_ERROR
 #define SPDLOG_LOGGER_ERROR(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::err, __VA_ARGS__)
-#define SPDLOG_MODULE_ERROR(module, ...) SPDLOG_MODULE_CALL(spdlog::default_logger_raw(), module, spdlog::level::err, __VA_ARGS__)
 #define SPDLOG_ERROR(...) SPDLOG_LOGGER_ERROR(spdlog::default_logger_raw(), __VA_ARGS__)
 #else
 #define SPDLOG_LOGGER_ERROR(logger, ...) (void)0
-#define SPDLOG_MODULE_ERROR(module, ...) (void)0
 #define SPDLOG_ERROR(...) (void)0
 #endif
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_CRITICAL
 #define SPDLOG_LOGGER_CRITICAL(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::critical, __VA_ARGS__)
-#define SPDLOG_MODULE_CRITICAL(module, ...) SPDLOG_MODULE_CALL(spdlog::default_logger_raw(), module, spdlog::level::critical, __VA_ARGS__)
 #define SPDLOG_CRITICAL(...) SPDLOG_LOGGER_CRITICAL(spdlog::default_logger_raw(), __VA_ARGS__)
 #else
 #define SPDLOG_LOGGER_CRITICAL(logger, ...) (void)0
-#define SPDLOG_MODULE_CRITICAL(module, ...) (void)0
 #define SPDLOG_CRITICAL(...) (void)0
 #endif
 
