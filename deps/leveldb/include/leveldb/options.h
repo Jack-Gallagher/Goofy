@@ -112,18 +112,6 @@ struct Options {
   // Default: 16
   int block_restart_interval;
 
-  // Leveldb will write up to this amount of bytes to a file before
-  // switching to a new one.
-  // Most clients should leave this parameter alone.  However if your
-  // filesystem is more efficient with larger files, you could
-  // consider increasing the value.  The downside will be longer
-  // compactions and hence longer latency/performance hiccups.
-  // Another reason to increase this parameter might be when you are
-  // initially populating a large database.
-  //
-  // Default: 2MB
-  size_t max_file_size;
-
   // Compress blocks using the specified compression algorithm.  This
   // parameter can be changed dynamically.
   //
@@ -140,39 +128,12 @@ struct Options {
   // efficiently detect that and will switch to uncompressed mode.
   CompressionType compression;
 
-  // If true, append to existing MANIFEST and log files
-  // when a database is opened.  This can significantly speed up open.
-  //
-  // Default: true
-  bool reuse_logs;
-
   // If non-NULL, use the specified filter policy to reduce disk reads.
   // Many applications will benefit from passing the result of
   // NewBloomFilterPolicy() here.
   //
   // Default: NULL
   const FilterPolicy* filter_policy;
-
-  // Open db to read only mode, no background compaction, disable write
-  //
-  // Default: false
-  bool read_only;
-
-  // Reuse info log file, do not rename to LOG.old
-  //
-  // Default: false
-  bool reuse_info_log;
-
-  // Info log file size max.
-  // When reuse_info_log is true, ignore this value.
-  //
-  // Default: 2MB
-  size_t info_log_max_size;
-
-  // Disable background compaction thread, let user control when to compaction
-  //
-  // Default: false
-  bool disable_background_compaction;
 
   // Create an Options object with default values for all fields.
   Options();

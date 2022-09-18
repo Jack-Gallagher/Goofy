@@ -27,7 +27,6 @@ class RandomAccessFile;
 class SequentialFile;
 class Slice;
 class WritableFile;
-class RandomRWFile;
 
 class Env {
  public:
@@ -44,8 +43,7 @@ class Env {
   // Create a brand new sequentially-readable file with the specified name.
   // On success, stores a pointer to the new file in *result and returns OK.
   // On failure stores NULL in *result and returns non-OK.  If the file does
-  // not exist, returns a non-OK status.  Implementations should return a
-  // NotFound status when the file does not exist.
+  // not exist, returns a non-OK status.
   //
   // The returned file will only be accessed by one thread at a time.
   virtual Status NewSequentialFile(const std::string& fname,
@@ -55,8 +53,7 @@ class Env {
   // specified name.  On success, stores a pointer to the new file in
   // *result and returns OK.  On failure stores NULL in *result and
   // returns non-OK.  If the file does not exist, returns a non-OK
-  // status.  Implementations should return a NotFound status when the file does
-  // not exist.
+  // status.
   //
   // The returned file may be concurrently accessed by multiple threads.
   virtual Status NewRandomAccessFile(const std::string& fname,
@@ -72,36 +69,8 @@ class Env {
   virtual Status NewWritableFile(const std::string& fname,
                                  WritableFile** result) = 0;
 
-  // Create an object that either appends to an existing file, or
-  // writes to a new file (if the file does not exist to begin with).
-  // On success, stores a pointer to the new file in *result and
-  // returns OK.  On failure stores NULL in *result and returns
-  // non-OK.
-  //
-  // The returned file will only be accessed by one thread at a time.
-  //
-  // May return an IsNotSupportedError error if this Env does
-  // not allow appending to an existing file.  Users of Env (including
-  // the leveldb implementation) must be prepared to deal with
-  // an Env that does not support appending.
-  virtual Status NewAppendableFile(const std::string& fname,
-                                   WritableFile** result);
-
-  // Open `fname` for random read and write, if file dont exist the file
-  // will be created.  On success, stores a pointer to the new file in
-  // *result and returns OK.  On failure returns non-OK.
-  //
-  // The returned file will only be accessed by one thread at a time.
-  virtual Status NewRandomRWFile(const std::string& fname,
-                                 RandomRWFile** result) {
-      return Status::NotSupported("RandomRWFile is not implemented in this Env");
-  }
-
   // Returns true iff the named file exists.
   virtual bool FileExists(const std::string& fname) = 0;
-
-  // Returns true iff the named dir exists.
-  virtual bool DirExists(const std::string& fname) = 0;
 
   // Store in *result the names of the children of the specified directory.
   // The names are relative to "dir".
@@ -256,36 +225,6 @@ class WritableFile {
   void operator=(const WritableFile&);
 };
 
-// A file abstraction for random reading and writing.
-class RandomRWFile {
- public:
-  RandomRWFile() {}
-  virtual ~RandomRWFile() {}
-
-  // Write bytes in `data` at  offset `offset`, Returns Status::OK() on success.
-  // Pass aligned buffer when UseDirectIO() returns true.
-  virtual Status Write(uint64_t offset, const Slice& data) = 0;
-
-  // Read up to `n` bytes starting from offset `offset` and store them in
-  // result, provided `scratch` size should be at least `n`.
-  // Returns Status::OK() on success.
-  virtual Status Read(uint64_t offset, size_t n, Slice* result,
-                      char* scratch) const = 0;
-
-  virtual Status Flush() = 0;
-
-  virtual Status Sync() = 0;
-
-  virtual Status Fsync() { return Sync(); }
-
-  virtual Status Close() = 0;
-
-private:
-  // No copying allowed
-  RandomRWFile(const RandomRWFile&);
-  RandomRWFile& operator=(const RandomRWFile&);
-};
-
 // An interface for writing log messages.
 class Logger {
  public:
@@ -294,12 +233,6 @@ class Logger {
 
   // Write an entry to the log file with the specified format.
   virtual void Logv(const char* format, va_list ap) = 0;
-
-  // Set the max file size of log
-  virtual void SetMaxLogSize(int max_log_size)
-  {
-    
-  }
 
  private:
   // No copying allowed
@@ -356,15 +289,7 @@ class EnvWrapper : public Env {
   Status NewWritableFile(const std::string& f, WritableFile** r) {
     return target_->NewWritableFile(f, r);
   }
-  Status NewAppendableFile(const std::string& f, WritableFile** r) {
-    return target_->NewAppendableFile(f, r);
-  }
-  virtual Status NewRandomRWFile(const std::string& fname,
-                                 RandomRWFile** result) {
-      return target_->NewRandomRWFile(fname, result);
-  }
   bool FileExists(const std::string& f) { return target_->FileExists(f); }
-  bool DirExists(const std::string& f) { return target_->DirExists(f); }
   Status GetChildren(const std::string& dir, std::vector<std::string>* r) {
     return target_->GetChildren(dir, r);
   }

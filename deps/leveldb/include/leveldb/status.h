@@ -47,9 +47,6 @@ class Status {
   static Status IOError(const Slice& msg, const Slice& msg2 = Slice()) {
     return Status(kIOError, msg, msg2);
   }
-  static Status NoSpace(const Slice& msg, const Slice& msg2 = Slice()) {
-      return Status(kNoSpace, msg, msg2);
-  }
 
   // Returns true iff the status indicates success.
   bool ok() const { return (state_ == NULL); }
@@ -61,20 +58,7 @@ class Status {
   bool IsCorruption() const { return code() == kCorruption; }
 
   // Returns true iff the status indicates an IOError.
-  bool IsIOError() const { return code() == kIOError || code() == kNoSpace; }
-
-  // Returns true iff the status indicates a NoSpace error
-  // This is caused by an I/O error returning the specific "out of space"
-  // error condition. Stricto sensu, an NoSpace error is an I/O error
-  // with a specific subcode, enabling users to take the appropriate action
-  // if needed
-  bool IsNoSpace() const { return code() == kNoSpace; }
-
-  // Returns true iff the status indicates a NotSupportedError.
-  bool IsNotSupportedError() const { return code() == kNotSupported; }
-
-  // Returns true iff the status indicates an InvalidArgument.
-  bool IsInvalidArgument() const { return code() == kInvalidArgument; }
+  bool IsIOError() const { return code() == kIOError; }
 
   // Return a string representation of this status suitable for printing.
   // Returns the string "OK" for success.
@@ -94,8 +78,7 @@ class Status {
     kCorruption = 2,
     kNotSupported = 3,
     kInvalidArgument = 4,
-    kIOError = 5,
-    kNoSpace = 6,
+    kIOError = 5
   };
 
   Code code() const {
