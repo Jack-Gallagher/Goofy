@@ -24,6 +24,7 @@ SET(GMOCK   ${DEPS_DIRECTORY}/gmock)
 SET(LEVELDB ${DEPS_DIRECTORY}/leveldb)
 SET(SPDLOG  ${DEPS_DIRECTORY}/spdlog)
 SET(UUID    ${DEPS_DIRECTORY}/uuid)
+SET(URING   ${DEPS_DIRECTORY}/liburing)
 SET(EC      ${DEPS_DIRECTORY}/erasurecode)
 
 # 编译子项

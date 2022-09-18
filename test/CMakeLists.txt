@@ -14,6 +14,7 @@ INCLUDE_DIRECTORIES(
     ${LEVELDB}/include
     ${SPDLOG}/include
     ${UUID}/include
+    ${URING}/inlcude
     ${EC}/include
     ${SRC}/public
     ${SRC}/common
@@ -27,6 +28,7 @@ LINK_DIRECTORIES(
     ${LEVELDB}/lib
     ${SPDLOG}/lib
     ${UUID}/lib
+    ${URING}/lib
     ${EC}/lib
 )
 
@@ -45,6 +47,7 @@ TARGET_LINK_LIBRARIES(goofy_ut
     leveldb
     spdlog
     uuid
+    uring
     ec
 )
 
@@ -59,5 +62,6 @@ TARGET_LINK_LIBRARIES(goofy_demo
     leveldb
     spdlog
     uuid
+    uring
     ec
 )
