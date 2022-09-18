@@ -14,6 +14,7 @@ INCLUDE_DIRECTORIES(
     ${LEVELDB}/include
     ${SPDLOG}/include
     ${UUID}/include
+    ${EC}/include
     ${SRC}/public
     ${SRC}/common
     ${SRC}/util
@@ -26,6 +27,7 @@ LINK_DIRECTORIES(
     ${LEVELDB}/lib
     ${SPDLOG}/lib
     ${UUID}/lib
+    ${EC}/lib
 )
 
 # 添加 ut 所需源文件目录
@@ -43,6 +45,7 @@ TARGET_LINK_LIBRARIES(goofy_ut
     leveldb
     spdlog
     uuid
+    ec
 )
 
 # 添加 demo 所需源文件目录
@@ -56,4 +59,5 @@ TARGET_LINK_LIBRARIES(goofy_demo
     leveldb
     spdlog
     uuid
+    ec
 )

@@ -9,6 +9,7 @@ INCLUDE_DIRECTORIES(
     ${LEVELDB}/include
     ${SPDLOG}/include
     ${UUID}/include
+    ${EC}/include
     ${SRC}/public
     ${SRC}/common
     ${SRC}/util
@@ -19,6 +20,7 @@ LINK_DIRECTORIES(
     ${LEVELDB}/lib
     ${SPDLOG}/lib
     ${UUID}/lib
+    ${EC}/lib
 )
 
 AUX_SOURCE_DIRECTORY("common/"  GOOFY_SOURCE)
@@ -31,4 +33,5 @@ TARGET_LINK_LIBRARIES(goofy
     leveldb
     spdlog
     uuid
+    ec
 )
