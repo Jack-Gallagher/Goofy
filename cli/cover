@@ -1,21 +1,47 @@
 #!/bin/sh
 
+# 目标名检查
 target=$1
-
-source_dir=$2
-if [ -z ${source_dir} ]; then
-    source_dir=../src
+if [ -z ${target} ]; then
+    echo "miss target name"
+    exit
 fi
 
-# -b
 argv=$3
 
-# CMake 构建目录
+# 排除目录检查
+exclude_dir=$2
+if [ ! -z ${exclude_dir} ]; then
+    if [ ${exclude_dir}='-b' ]; then
+        argv='-b';
+    elif [ ! -d ${exclude_dir} ]; then
+        echo "exclude dir ${exclude_dir} not exist"
+        exit
+    fi
+fi
+
+# 设置CMake 构建目录
 build_dir=../build/
 
+if [ ! -d "obj" ]; then
+    mkdir obj
+fi
+
+# 查找 .gcda 与 .gcno 文件
 object_dir=`find ${build_dir} -type d -name ${target}.dir`
+for file in `find ${object_dir} -type f -name *.gc*`
+do
+    cp ${file} ./obj
+done
 
-# axcludeDir='--exclude=.'
-exclude_dir=
+source_dir=../src/
 
-./gcovr --object-directory=${object_dir} --root=${source_dir} ${exclude_dir} ${argv}
+# 设置排除目录参数
+excludeArg=''
+if [ ! -z ${exclude_dir} ]; then
+    excludeArg="--exclude=${exclude_dir}"
+fi
+
+gcovr ./obj/ --root=${source_dir} ${excludeArg} ${argv}
+
+rm -rf obj/
