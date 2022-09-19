@@ -41,14 +41,6 @@
 #include <string>
 #include <type_traits>
 
-#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5
-namespace std {
-    template<typename T>
-    using is_trivially_copy_constructible = std::has_trivial_copy_constructor<T>;
-}
-#endif
-
-
 #include "gtest/gtest-printers.h"
 #include "gtest/internal/gtest-internal.h"
 #include "gtest/internal/gtest-port.h"
