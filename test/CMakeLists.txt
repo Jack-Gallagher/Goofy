@@ -16,7 +16,7 @@ INCLUDE_DIRECTORIES(
     ${UUID}/include
     ${URING}/inlcude
     ${EC}/include
-    ${SRC}/public
+    ${SRC}/include
     ${SRC}/common
     ${SRC}/util
 )

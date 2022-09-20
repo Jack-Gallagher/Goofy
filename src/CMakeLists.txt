@@ -11,7 +11,7 @@ INCLUDE_DIRECTORIES(
     ${UUID}/include
     ${URING}/include
     ${EC}/include
-    ${SRC}/public
+    ${SRC}/include
     ${SRC}/common
     ${SRC}/util
 )
@@ -27,7 +27,7 @@ LINK_DIRECTORIES(
 
 AUX_SOURCE_DIRECTORY("common/"  GOOFY_SOURCE)
 AUX_SOURCE_DIRECTORY("db/"      GOOFY_SOURCE)
-AUX_SOURCE_DIRECTORY("util/"  GOOFY_SOURCE)
+AUX_SOURCE_DIRECTORY("util/"    GOOFY_SOURCE)
 
 ADD_LIBRARY(goofy ${GOOFY_SOURCE})
 
