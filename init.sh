@@ -59,14 +59,15 @@ download(){
     do
         printf "downloading .... \e[36m%-28s\e[0m" "[${file}]"
         `wget -t 3 -nv -N -P ${pkgs_dir} ${pkg_dir} ${pkg_url}/${file}.tar.gz -o /tmp/wget.log`
-        err=`cat /tmp/wget.log | grep ERROR`
-        if [ ${#err[*]} -gt 0 ]; then
+        err=`cat /tmp/wget.log | grep ERROR | wc -w`
+        if [ ${err} -eq "0" ]; then
             tar -xzf ${pkgs_dir}/${file}.tar.gz -C ${lib_dir}
             printf "\e[32m%10s\e[0m\n" "[OK]"
         else
-            printf "\e[31m%10s\e[0m\n" "[ERROR]"
+            printf "\e[31m%10s\e[0m\n" "[failed]"
         fi
     done
+    echo ""
     rm -f /tmp/wget.log
 }
 
