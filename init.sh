@@ -1,7 +1,7 @@
 #!/bin/bash
 
 conf_file="pkg.config"
-pkg_url="https://raw.githubusercontent.com/Misuzu-star/Deps/master"
+pkg_url="https://gitlab.com/Misuzu-star/deps/-/raw/main"
 lib_dir="deps"
 pkgs_dir="deps/pkg"
 
@@ -57,14 +57,14 @@ download(){
     echo "================= downloading package ================="
     for file in ${miss_pkgs[*]}
     do
-        printf "downloading.... \e[32m%-31s\e[0m" "[${file}]"
-        `wget -c -t 3 -nv -P ${pkgs_dir} ${pkg_dir} ${pkg_url}/${file}.tar.gz -o /tmp/wget.log`
+        printf "downloading .... \e[36m%-28s\e[0m" "[${file}]"
+        `wget -t 3 -nv -N -P ${pkgs_dir} ${pkg_dir} ${pkg_url}/${file}.tar.gz -o /tmp/wget.log`
         err=`cat /tmp/wget.log | grep ERROR`
         if [ ${#err[*]} -gt 0 ]; then
-            tar -xzf ${pkgs_dir}/${p}.tar.gz -C ${lib_dir}
-            printf "\e[32m%12s\e[0m\n" "[OK]"
+            tar -xzf ${pkgs_dir}/${file}.tar.gz -C ${lib_dir}
+            printf "\e[32m%10s\e[0m\n" "[OK]"
         else
-            printf "\e[31m%12s\e[0m\n" "[ERROR]"
+            printf "\e[31m%10s\e[0m\n" "[ERROR]"
         fi
     done
     rm -f /tmp/wget.log
